@@ -44,4 +44,47 @@ Explanatory models provide the freedom to create much more communicative styles 
 
 ### Binding Model and Implementation
 The author explains with an example how the model with lot of associations could not solve the purpose of the developers creating objects if they do not know the language.
+Analysis model is the product of analyzing the business domain to organize its concepts without any consideration of the part it will play in software system. But here the design is not based on model so knowledge crunching happens. An analyziz must capture fundamental concepts from the domain in a comprehensible expressive way. 
+
+MODEL-DRIVEN DESIGN discards the contrast between design driven vs the model. The ideal design should retain as many conecpts of the model as possible, as literally as possible. But this requires hard thinking and multiple iterations to achieve this.
+
+> Design a portion of the software system to reflect the domain model in a very literal way, so that mapping is obvious.  Revisit the model and modify it to be implemented more naturally in software. Demand a single model that serves both purposes well. Have one model and tie the implementation slavishly to it. To do this usually requires software development tools and languages that support a modeling paradigm, such as object-oriented programming.
+
+Development becomes an iterative process of refining the model, design and code as a single activity 
+
+#### Modeling Paradigms and Tool Support
+To support the MODEL DRVEN DESIGN, the tool should represent the concepts in the paradigm. Object- Oriented programming is powerful because it is based on modeling paradigm and provides implementations of the model constructs. 
+
+Procedural languages often support complex data types that begin to correspond to more natural conceptions of the domain, but these complex types are only organized data, and don’t capture the active aspects of the domain.
+
+The author then explained/ built the model based PCB design and worked through the approach of building with the language that is used in PCB design. They created classes and the objects that represent model driven design and included the constraints on combining rules and other enhancements. The other design he proposed was for testing where the components are broken into well - defined interfaces that can be unit tested.
+
+I like this point where the author with an example shares the importance of model representing the design. When a design is based on the model that reflects the basic concerns of the user to a greater extent than with other design approaches. Revealing the model gives the user more access to the potential of the software and yields consistent, predictable behavior.
+
+The Author also gives example of the development with out the knowledge of model could give the result that is not expected. So this shows the importance of the developer being involved in model development  and use the models to adopt it to the implementation. The implementation changes should reflect in the model and model changes should reflect in implementation. So this emphasizes the programmers are modelers.
+
+> Procedural languages often support complex data types that begin to correspond to more natural conceptions of the domain, but these complex types are only organized data, and don’t capture the active aspects of the domain.
+
+## Chapter 2 - Building Blocks of a Model - Driven Design
+### Isolating the domain
+Decoupling of the domain models from the other functions of the system is important. 
+In the layered architecture where we have UI layer to be interacted with the clients. Suppose there is some business logic in the behavior of UI widgets and database scripts. As the code increases, increases the complexity and changing business rules might require tracing the UI code and database code. 
+
+Creating programs that can handle very complex task calls for separation of concerns allowing concentration on different parts of the design in isloation.
+
+* User Interface  - Responsible for showing the info to the user and interpreting the user commands.
+* Application layer - Defines the jobs that software is supposed to do and directs the expressive domain objects to work out problems.
+* Domain Layer - Responsible for representing the concepts of the business, information about the business situation and business rules.
+* Infrastructure Layer - Technical capabilities to support higher layers
+
+The author explains the seperation of concerns at each layer and dividing the responsibilities are important. Here it clearly emphasizes on the boundaries of each layer. For instance, sending an email. The domain layer is only concerned about initiating the request with content to be sent via mail but it is not worried about how it is sent. It is up to the infrastructure layer to send the mail to the concerned parties.
+
+With the current frameworks make the solution such that the domain models should not be buried under the framework related objects which will hinder the performance of the application. The business objects should be readable and expressive of the purpose 
+
+
+
+
+
+
+
 
