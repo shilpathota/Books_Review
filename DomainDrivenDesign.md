@@ -81,7 +81,32 @@ The author explains the seperation of concerns at each layer and dividing the re
 
 With the current frameworks make the solution such that the domain models should not be buried under the framework related objects which will hinder the performance of the application. The business objects should be readable and expressive of the purpose 
 
+#### Domain Layer is where model lives
+The domain layer is the manifestation of that model and all directly related design elements. The design and implementation of the business logic constitutes the domain layer. In model driven design, the software constructs of domain layer mirror the model concepts.
 
+the author calls Smart UI Anti Pattern where layered architecture is not applicable to a simpler project which has simple flow and need not be separated into layers. In this case, the model driven approach may not be the right way to do as it imposes complexity
+
+#### A model expressed in software
+In model driven approach, the main aim is to map the model with the implementation which means the associations to be exactly represented.  the author expresses 3 patterns of model elements that express the model 
+* Entities
+* Value Objects
+* Services
+
+The actions or operations can be clearly called as Services. But there is confusion between Entities vs Value Objects. there are modules that improves low coupling and high cohesion. 
+#### Associations
+The interactions between modeling and implementaion is tricky with the associations between objects. Suppose a model shows association between customer and sales representative. We abstract them as real people and think as 2 java objects or encapsulation of database lookup or some comparable implementation.
+##### 3 ways of associations make tractable
+* Imposition of the traversal direction -> Bi directional are tricky to implement as both objects can only be understood together.
+* Addition of a qualifier, effectively reducing multiplicity -> Looking deeper we can get some qualities which reduces associations one-to - one and embeds important rule into model.
+* Elimination of non essential associations -> constraining associations make them simpler to implement
+
+##### Entity
+  Entity is the object defined primarily by its identity. I really like this point by the author where the Class definitions, responsibilties, attributes and associations should revolve around who they are, rather than the particular attributes tey carry which might change but the identity of who they are would not change. For example, a customer information has name and phone which cannot be treated as entity. Customer ID which is unique would be the ENTITY.
+
+  Each entity must have an operational way of establishing its identiy with another object. But in case of distributed system where the same instance is transferred over network or other datbaase the identity is lost. Sometimes the combinations of attributes can be guaranteed to be unique within the system and it provides unique key for the ENTITY. Once the symbol which is unique is attached to the instance it is immutable and will never be changed.
+
+##### Value Objects
+An object that represents a descriptive aspect of the domain that has no conceptual identity is called a VALUE OBJECT
 
 
 
