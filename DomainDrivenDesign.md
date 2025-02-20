@@ -106,7 +106,31 @@ The interactions between modeling and implementaion is tricky with the associati
   Each entity must have an operational way of establishing its identiy with another object. But in case of distributed system where the same instance is transferred over network or other datbaase the identity is lost. Sometimes the combinations of attributes can be guaranteed to be unique within the system and it provides unique key for the ENTITY. Once the symbol which is unique is attached to the instance it is immutable and will never be changed.
 
 ##### Value Objects
-An object that represents a descriptive aspect of the domain that has no conceptual identity is called a VALUE OBJECT
+An object that represents a descriptive aspect of the domain that has no conceptual identity is called a VALUE OBJECT. It represents what they are instead of who they are. One good example that I liked helped me understand is the route from LA to SFO via Pacific Coast HighWay. LA, SFO and Highway are Entities where as the route object is the VALUE OBJECT which points to the entities. It can also be assemblage of other VALUE OBJECTS. They are often passed as parameters in messages between objects. A person may be modeled as ENTITY but the person name is VALUE. 
+
+These attributes should be treated as immutable. This allows the software to allow sharing the same refreence and passing safe and do not disturb the original state of the attributes. On the other hand, there might be cases where it should be mutable. For Instance, object creation or deletion is expensive or replacement rather than modification will distrub clustering. As long as VALUE OBJECT is immutable, change management is simple.
+
+##### Services
+A SERVICE is an operation offered as an interface that stands alone in the model without encapsulating state as ENTITIES and VALUE OBJECTS do. They are common patterns in technical framwworks but they can also apply in the domain layer.
+The service emphasizes the relationship with other objects. The characteristics of good service is 
+* relates to a domain concept that is not part of entity or value object
+* Interface is defined in terms of other elements of the domain model
+* The operation is stateless -> any instance can use it and does not affect behavior
+
+The fine grained domain objects can contribute to knowledge leaks from the domain into application layer . Medium grained stateless services can be easier to reuse in large systems because they encapsulate significant functionality behind simple interface.
+##### Modules
+The modules in the domain layer should emerge as a meaningful part of the model telling the story of the domain on a larger scale. there should be low copuling and high cohesion within them.
+
+Whenever two model elements are separated into different modules, the relationships between thembecome less direct and increases the overhead of understanding their place in the design. Low coupling between MODULES minimizes this cost, and makes it possible to analyze the contents of one MODULE with a minimum of reference to others that interact.
+I like the way the author describes modules as a way of communication mechanism which drives the meaning. If the classes are together inside a module. Think of it as together they are working on a purpose.
+
+The Module should reflect insight into the domain. Modules will also evolve with the model and the code. 
+
+The author presented an interesting scenario where we have been using the frameworks that we seperate the layers to talk to database and business logic and the functional logic to supply to the presentation layer. But according to domain driven design the data should bind with the logic that uses them, In this case, it is not possible and the division or the packages are based on the layers and not the functionalities. In this case, dividing into modules and each module having the layers will make it more complex.
+
+In the above case, the code will not reveal the model and the domain developers wil lose the ability to chunk the model into meaningful pieces. so there should be some tradeoffs in this case. The author suggests to Choose a minimum of technical partitioning rules that are essential to the technical environment or actually aid development.
+
+> Unless there is a real intention to distribute code on different servers, keep all the code that implements a single conceptual object in the same MODULE, if not the same object.
 
 
 
