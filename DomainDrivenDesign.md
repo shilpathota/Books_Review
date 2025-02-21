@@ -132,6 +132,70 @@ In the above case, the code will not reveal the model and the domain developers 
 
 > Unless there is a real intention to distribute code on different servers, keep all the code that implements a single conceptual object in the same MODULE, if not the same object.
 
+Use packaging to separate the domain layer from other code. Modularity becomes more crutial as the design gets bigger and more complex
+
+The ENTITIES, VALUE OBJECTS and their associations, along with a few domain SERVICES and the organizing MODULES are point of direct corresspondence between the implementation and the model.
+
+
+### Modeling Paradigms
+Object oriented programming helped the developers in achieving the model based approach for the applications. But the object creation should be used wisely. While object models address a large number of practical software problems,  A knowledge-rich domain model contains explicit rules, yet the object paradigm lacks specific semantics
+for stating rules and their interactions.
+
+This is something that got my atttention of what the author is saying that Suppose there is a rules engine for which we may not use object paradigm but mixed up the declarative way of programming. On adding up more rules and whcih is not in sync with the model definitely looses the synchronization with object system. When the domain model is bridging two paradigms, it is crucial to keep it cohesive, showing the relationships between, in this example, the rules and the objects. It is important to continue to think in terms of models while working with rules. Otherwise, the data and the rules become unconnected. 
+
+### Lifecycle of the Doman Object
+Most of the objects created are transient and they gets garbage collected after the life cycle of the object is ended.
+There are 3 patterns to address problems with the maintenance of object
+* AGGREGATES tighten up the model itself by defining clear ownership and boundaries
+* FACTORIES to create and reconstitute complex objects
+* REPOSITORIES address the middle and end of the lifecycle, providing the means of finding and retrieving persistent objects while encapsulating the immense infrastructure involved
+
+> Modeling AGGREGATES and adding FACTORIES and REPOSITORIES to the design gives us the ability to manipulate the model objects systematically and in meaningful units throughout their lifecycle.
+
+#### AGGREGATES
+- It is difficult to guarantee the consistency of changes to objects in a model with complex associations.
+- To address the issues that occurs with maintaining the complex associations and also adhering to the model which represents domain knowledge, we need an abstraction for encapsulating references within the model.
+- An AGGREGATE is a cluster of associated objects that we treat as a unit for the purpose of data changes.
+- Each AGGREGATE has a root and a boundary. The boundary defines what is inside the AGGREGATE.
+- The root is a single specific ENTITY contained in the AGGREGATE.
+- The root is the only member of the AGGREGATE that outside objects are allowed to hold references to, although objects within the boundary may hold references to each other.
+- ENTITIES other than the root have local identity, but it only needs to be unique within the aggregate, since no outside object can ever see it out of the context of the root ENTITY.
+
+  For Example, the car is ROOT which is identified by the VIN number which is unique and each tyre internally has some representation to find which tyre rotation is captured. That is internal to the car and the outside world refers car with VIN. But Tyre has unique identity within the aggregate.
+
+> Cluster the ENTITIES and VALUE OBJECTS into “AGGREGATES” and define boundaries around each. Choose one ENTITY to be the “root” of each AGGREGATE, and control all access to the objects inside the boundary through the root.
+> Only allow references to the root to be held by external objects.
+> Transient references to internal members can be passed out for use within a single operation only. Because the root controls access it cannot be blind-sided by changes to the internals. This makes it practical to enforce all invariants for objects in the AGGREGATE and for the AGGREGATE as a whole in any state-change.
+
+#### FACTORIES
+This concept has come into the field due to separation of reponsibilities between the object creation and responsibility of the objects. A program element whose responsibility is the creation of other objects is called a FACTORY.
+
+
+ Just as the interface of an object should encapsulate its implementation, allowing a client to use its behavior without knowing how it works, a FACTORY encapsulates the knowledge needed to create a complex object or AGGREGATE. It provides an interface that reflects the goals of the client and an abstract view of the created object.
+
+ > Shift the responsibility for creating instances of complex objects and AGGREGATES to a separate object, which may itself have no responsibility in the domain model, but is still part of the domain design. Provide an interface that encapsulates all complex assembly and that does not require the client to reference the concrete classes of the objects being instantiated. Create entire AGGREGATES as a piece, enforcing their invariants.
+
+There are some creational patterns like FACTORY METHOD, ABSTRACT FACTORY and BUILDER. these patterns helps the model driven design on track
+
+> FACTORY METHOD encapsulates expansion of an Aggregate
+
+
+#### REPOSITORIES
+
+#### Designing Objects for Relational Databases
+
+
+## Chapter 3 - Refactoring Toward Deeper Insight
+### Making implicit Concepts Explicit
+### Supple Design
+### Applying Analysis Patterns
+### Relating Design Patterns to the Model
+
+## Chapter - 4 - Strategic Design
+### Maintaining Model Integrity
+### Distillation
+### Large-Scale Structure
+
 
 
 
