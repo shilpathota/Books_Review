@@ -1,4 +1,4 @@
-# Review of Book Domain Driven Design by Eric Evans
+# Knowledge gained from Domain Driven Design by Eric Evans
 
 This is a really worth reading book which introduces and tells the importance of having the domain understanding for a developer to avoid gaps between expected vs actual design and working.
 
@@ -181,8 +181,70 @@ There are some creational patterns like FACTORY METHOD, ABSTRACT FACTORY and BUI
 
 
 #### REPOSITORIES
+The repositories provide controlled access to aggregates and act as a bridge between the domain model and the data persistence.  the purpose of repositories are they abstract the mechanisms of object storage and retrieval. They also provide an in-memory collection like interface to access domain objects. they ensure that domain llogic remains independent of persistent concerns.
 
+##### What is the difference between repositories and Data Access Objects (DAOs)?
+- DAO expose database queries and are focused on the persistence mechanism where as repositories, are part of the domain layer and provide access to aggregates while maintaining business rules
+- Repositories return fully formed domain objects, not raw data structures.
+
+##### Good repository means--
+- Handles aggregates -> Repositories typically manage aggregate roots to ensure consistency
+- Provides a collection like interface -> It should behave like an in-memory collection offering methods like add(), remove() and findById()
+- Encapsulates Queries -> Clients should not beed to know how objects are persisted and they should just retrieve objects via repository methods
+- Maintains a Seperation of Concerns -> Business Logic should not be mixed with persistence logic
+
+##### Implementation Guidelines --
+- Define repositories for aggregate roots only
+- Keep repository interfaces domain driven  (eg., findOrderByCustomer() instead of a generic SQL like query)
+- Allow the domain layer to remain independent of the persistence layer ( Use dependency injection if needed)
+- Use repositories as an entry point for retrieving domain objects instead of direct database access
+
+##### Repositories in Large context
+* They work closely with factories to handle object creation
+* They preserve domain logic by ensuring only valid domain objects are retrieved and stored
+* They help decouple the domain layer from the infrastructure layer
+  
 #### Designing Objects for Relational Databases
+This topic focuses on the domain models to relational databases, handling object - relational impedence mismatches, and ensuring that the persistence mechanism does not pollute the domain layer
+
+##### The Challenge of Mapping objects to Relational Databases
+Relational Databases store data in tables with normalized structures and Object oriented models represent entities as objects with encapsulated behaviors. this creates challenge when mapping between the two because - 
+* Objects have hierarchial relationships while relational databases rely on flat tables with foreign keys
+* Objects use inheritance and polymorphism but relational databases do not directly support these features
+* Objects are usually referenced through associations while relational databases prefer joins
+ To bridge this gap domain driven design must carefully map objects to database tables without compromising the domain model
+
+##### Mapping Aggregates to Tables
+Since aggregates group entities and enforce consistency rules, the persistence mechanism should not reflect aggregate boundaries. So recommended approach is
+* Each aggregate root should map to a separate table
+* Entities inside an aggregate should be stored in the same table or as related tables
+* Foriegn keys should only reference aggregate roots not inernal entities
+
+For example, Order is an aggregate root and maps to orders table and the Orderline is part of Order and maps to the order_lines table with a foreign key references to orders.
+
+> Objects within the same aggregate should be saved and retrieved together to maintain consistency
+
+##### Handling Associations in a Relational Database
+Object-oriented models rely on associations(references) while relational databases use foreign keys.
+
+
+**One-to-One Association** - If an Employee entity has an associated Address. It can be stored using a foriegn key in the Employee Table. 
+
+
+> Best Practice - If the associated object is a Value Object (e.g., Address) consider embedding it in the parent table rather than using a foriegn key.
+
+**One-to-Many Association** - If an Order has multiple OrderLines. the order_lines table will store a foreign key pointing to orders
+
+> Best Practice - Use cascading operations in the ORM to ensure that deleting an order deletes its order lines
+
+
+**Many-to-Many Association** - For relationships like " A student can enroll in multiple Courses and a course has multiple students" a join table is needed
+
+> Best Practice - When using many-to-many relationships, introduce a domain concept instead of a pure join table (eg., Enrollment)
+
+##### Strategies for Handling Inheritance
+
+
 
 
 ## Chapter 3 - Refactoring Toward Deeper Insight
