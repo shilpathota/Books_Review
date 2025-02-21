@@ -230,7 +230,6 @@ Object-oriented models rely on associations(references) while relational databas
 
 **One-to-One Association** - If an Employee entity has an associated Address. It can be stored using a foriegn key in the Employee Table. 
 
-
 > Best Practice - If the associated object is a Value Object (e.g., Address) consider embedding it in the parent table rather than using a foriegn key.
 
 **One-to-Many Association** - If an Order has multiple OrderLines. the order_lines table will store a foreign key pointing to orders
@@ -243,9 +242,13 @@ Object-oriented models rely on associations(references) while relational databas
 > Best Practice - When using many-to-many relationships, introduce a domain concept instead of a pure join table (eg., Enrollment)
 
 ##### Strategies for Handling Inheritance
+Since relational databases don't support class inheritance, three strategies are used
+- Table per class hierarchy (Single Table Inheritance) -> All subclasses are stored in a single table with a type discriminator column. Simple queries are easy to implement and we have wasted spaces if subclasses have different attributes
+- Table per subclass (joined table inheritance) -> Each subclass gets its own table with a foreign key to the base class. More normalized and no wasted space but requires JOIN operations which may reduce performance
+- Table per Concrete Class -> Each subclass has its own separate table, duplicating common attributes. No joins required but Duplication of attributes
 
-
-
+> To Prevent persistence concerns from polluting the domain model, use Repositories and ORM frameworks like Hibernate or SQLAlchemy
+> Apply Lazy loading where necessary to prevent unnecessary queries
 
 ## Chapter 3 - Refactoring Toward Deeper Insight
 ### Making implicit Concepts Explicit
