@@ -293,7 +293,207 @@ Even after refactoring the domain model, it should also be easy to work with in 
 - Operations should produce results of the same type, making them chainable and predictable. Example: Instead of modifying an Order in place, return a new Order with updates. This allows composability and better predictability.
   
 ### Applying Analysis Patterns
+The author highlights the importance of analysis patterns which is recurring solutions to common modeling problem in complex domains. These patterns are not implementation patterns but instead provide conceptual solutions that can be adapted to different business domains
+
+Key benefits of the analysis patterns - 
+* Improved Communication - Since these patterns are widely recognized, they provide a shared vocabulary between developers and domain experts
+* Faster Model Development - Instead of creating models from scratch, teams can use proven solutions
+* More Maintainable Code - Models based on established patterns are easire to extend and modify
+* Better alignment with business logic - These patterns closely mirror real-world business structures
+
+**Accountability Pattern** 
+
+📌 Problem: Many domains involve responsibilities and obligations between entities (e.g., contracts, leases, customer orders).
+
+📌 Solution: Instead of modeling simple one-to-one relationships, use an Accountability pattern where an Accountability object captures the relationship.
+
+
+For Example, consider a customer and he rented a property. Instead of directly storing the link betweeen customer and property we can introduce Accountablity object. in this case it is rental agreement. So customer and property does not reference each other directly. The rental agreement captures Start and End date, Rental terms, Pricing Rules and Contractual Obligations. If multiple parties involved we do not disturb the customer and property
+
+**The Obervation Pattern**
+
+📌 Problem: A system needs to track and store historical changes over time (e.g., temperature readings, stock market prices).
+
+📌 Solution: Introduce an Observation object that records changes instead of modifying the entity itself
+
+
+For Example, Instead of modifying Patient, we create and Observation entity that tracks vitals. the System maintains a history of changes without altering the main Patient Object
+
+**The Specification Pattern**
+
+📌 Problem: Business rules change frequently, making hardcoded logic difficult to maintain.
+
+📌 Solution: Use a Specification object that encapsulates business rules, making them reusable and configurable.
+
+For Example, we have loan eligibility logic that keeps changing and is used in multiple places, define a LoanEligibilitySpecification class which captures business rules and it would be independent of application logic and can be easily updated
+
+**The Trading Pattern**
+
+📌 Problem: Financial and e-commerce domains often involve buying, selling, and trading transactions.
+
+📌 Solution: Instead of linking Buyer and Seller directly, introduce a Trade object
+
+The Trade records will have Transaction Date, Amount, Commission Fees and Status. this pattern makes auditing transactions easier and supports future extensions like refunds and disputes
+
+##### How to apply analysis patterns in Domain Driven Design
+- Identify Repeating Business scenarios -> Look for common relationships in your domain. For example, if your system tracks multiple types of contracts, consider the accountability pattern.
+- Use a ubiquitous language -> Discuss patterns with domain experts and adapt them to fit domain specific terminology. For example, Instead of calling it Accountability a legal system may refer to it as Legal Obligation
+- Keep the Domain Model Clean -> Avoid forcing an analysis pattern if it does not fit naturally.
+- Iterate and Refactor -> Implement an analysis pattern in a small area first and validate its effectiveness. It improves clarity and flexibility expands its usage
+
 ### Relating Design Patterns to the Model
+Unlike analysis patterns which focuses on the domain concepts, the design patterns focus on structuring components for better maintainability, flexibility and expressiveness
+
+- Design patterns provide structure and they are the tools to support a rich domain model.
+- Applying patterns blindly can lead to overengineering and they should be choosen based on how they enhance the model
+- Well-choosen design patterns clarify the domain model by making relationships and behaviors explicit
+
+#### Key Design patterns
+**Strategy(Policy Pattern)**
+
+
+📌 Problem: Business logic often changes based on conditions (e.g., different pricing rules for VIP customers).
+
+📌 Solution: Encapsulate behavior into separate Strategy objects, allowing dynamic rule changes without modifying domain entities.
+
+```java
+  public interface PricingStrategy {
+    BigDecimal calculatePrice(BigDecimal basePrice);
+}
+
+public class DiscountPricingStrategy implements PricingStrategy {
+    public BigDecimal calculatePrice(BigDecimal basePrice) {
+        return basePrice.multiply(new BigDecimal("0.9")); // 10% discount
+    }
+}
+
+public class PremiumPricingStrategy implements PricingStrategy {
+    public BigDecimal calculatePrice(BigDecimal basePrice) {
+        return basePrice.multiply(new BigDecimal("0.8")); // 20% discount for premium members
+    }
+}
+
+```
+The Order entity can use a PricingStrategy to calculate prices dynamically. this keeps domain logic flexible without modifying Order and encapsulates pricing variations as reusable domain objects
+
+**Composite Pattern**'
+
+📌 Problem: Some domain concepts have a tree-like structure (e.g., product catalogs, organization hierarchies).
+
+📌 Solution: Use the Composite Pattern to model hierarchical relationships.
+
+```java
+public abstract class ProductComponent {
+    String name;
+    public abstract BigDecimal getPrice();
+}
+
+public class Product extends ProductComponent {
+    private BigDecimal price;
+    
+    public Product(String name, BigDecimal price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+}
+
+public class ProductCategory extends ProductComponent {
+    private List<ProductComponent> products = new ArrayList<>();
+
+    public void add(ProductComponent product) {
+        products.add(product);
+    }
+
+    public BigDecimal getPrice() {
+        return products.stream().map(ProductComponent::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
+
+```
+A ProductCategory can contain individual products or other categories, forming a tree structure. This Simplifies hierarchical domain models like menus, taxonomies, and workflows and Encapsulates structure inside the domain model instead of relying on external services.
+
+**Factory Pattern**
+
+📌 Problem: Complex domain objects should not expose their construction logic.
+
+📌 Solution: Use Factory Methods to centralize object creation while ensuring business rules are enforced.
+
+```java
+public class BankAccountFactory {
+    public static BankAccount createSavingsAccount(Customer customer, BigDecimal initialDeposit) {
+        if (initialDeposit.compareTo(new BigDecimal("500")) < 0) {
+            throw new IllegalArgumentException("Minimum deposit is $500 for savings accounts.");
+        }
+        return new BankAccount(customer, AccountType.SAVINGS, initialDeposit);
+    }
+}
+
+```
+The factory ensures that all created bank accounts adhere to business constraints. This Encapsulates object creation logic inside the domain layer and Prevents invalid states by ensuring business rules are applied upfront.
+
+**Specification Pattern**
+
+📌 Problem: Business rules often need to be modular, reusable, and composable.
+
+📌 Solution: Use the Specification Pattern to encapsulate domain rules.
+
+```java
+public class LoanEligibilitySpecification {
+    public boolean isSatisfiedBy(Customer customer) {
+        return customer.getCreditScore() > 700 && customer.getIncome() > 50000;
+    }
+}
+
+```
+Instead of hardcoding eligibility checks in multiple places, they are centralized in a Specification object.  Encapsulates business rules as reusable objects and Allows dynamic rule composition (e.g., combining multiple specifications).
+
+**Anti-Corruption Layer**
+
+📌 Problem: When integrating with external systems, domain models may be polluted with legacy or external concepts.
+
+📌 Solution: Introduce an Anti-Corruption Layer (ACL) to translate between different models.
+
+```java
+public class CustomerAdapter {
+    private LegacyCustomerService legacyService;
+
+    public CustomerAdapter(LegacyCustomerService legacyService) {
+        this.legacyService = legacyService;
+    }
+
+    public ModernCustomer getCustomer(String customerId) {
+        LegacyCustomer legacyCustomer = legacyService.fetchCustomer(customerId);
+        return new ModernCustomer(legacyCustomer.getId(), legacyCustomer.getFullName(), legacyCustomer.getEmail());
+    }
+}
+
+```
+The adapter prevents legacy code from polluting the core domain. this Isolates domain models from external systems. Ensures clean separation between bounded contexts.
+
+Not all design patterns are equally useful in domain modeling. Some patterns overcomplicate things, while others reinforce the model.
+
+✅ Good Design Patterns for DDD:
+
+✔ Strategy (Policy Pattern) – Encapsulates domain logic that changes dynamically.
+
+✔ Composite – Models hierarchical domain relationships.
+
+✔ Factory – Prevents invalid states and enforces business rules.
+
+✔ Specification – Encapsulates domain rules and makes them reusable.
+
+✔ Anti-Corruption Layer – Protects domain models from legacy or third-party pollution.
+
+
+🚫 Less Useful Patterns in DDD:
+
+❌ Flyweight – Optimizes memory usage but is not relevant to domain modeling.
+
+❌ Singleton – Often leads to hidden dependencies that hurt testability.
 
 ## Chapter - 4 - Strategic Design
 ### Maintaining Model Integrity
